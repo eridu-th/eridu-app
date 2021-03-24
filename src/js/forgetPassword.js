@@ -16,7 +16,7 @@ export function forgetPassword() {
     container.innerHTML = `
     <div id="login_form">
         <div id="makesend_logo">
-            <img src="https://static.wixstatic.com/media/9b8311_7e3822433af34553bc9afd08e9c5f56e~mv2.png/v1/fill/w_220,h_80,al_c,q_85,usm_0.66_1.00_0.01/logo_edited.webp" alt="eridu_logo">
+        <img src="${endpoints.host}/images/eridu_logo.png" alt="eridu_logo">
         </div>
         <h1>Reset Password</h1>
         <hr>

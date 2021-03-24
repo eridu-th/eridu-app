@@ -1,11 +1,10 @@
 import endpoints from './endpoints.js';
-const headerEndpoint = `${endpoints.host}/header`;
 const loginEndpoint = `${endpoints.host}/login`;
 const authCheckEndpoint = endpoints.checkToken;
 
 export async function generateHeaders() {
     try {
-        const response = await fetch(headerEndpoint, {
+        const response = await fetch(endpoints.headerEndpoint, {
             method: 'post',
             mod: 'cors',
             headers: {
@@ -29,16 +28,16 @@ export async function checkToken() {
     const token = userToken();
     const headers = await generateHeaders();
     if (token) {
-        const response = await fetch(authCheckEndpoint, {
+        const response = await fetch(endpoints.checkTokenEndpoint, {
             method: 'post',
             mod: 'cors',
             responseType: 'json',
             headers: {
                 'Content-Type': 'application/json',
                 'User-Token': `${token}`,
-                'Client-Token': headers['Client-Token'],
-                'Time-Stamp': headers['Time-Stamp'],
-                'Time-Signature': headers['Time-Signature']
+                'Client-Token': headers['client-token'],
+                'Time-Stamp': headers['sime-stamp'],
+                'Time-Signature': headers['time-signature']
             }
         })
             .then(res => res.json())

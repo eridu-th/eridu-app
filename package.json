@@ -2,9 +2,9 @@
   "name": "eridu-app",
   "version": "1.0.0",
   "description": "eridu internal use",
-  "main": "index.js",
+  "main": "app.js",
   "scripts": {
-    "start": "node index.js",
+    "start": "node app.js",
     "build": "webpack --mode production",
     "dev": "webpack-dev-server --mode development --open"
   },

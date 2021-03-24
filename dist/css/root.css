@@ -1,5 +1,6 @@
 :root {
     --max-width: 1100px;
-    --makesend-logo: url("https://www.makesend.asia/wp-content/uploads/2018/06/logo-makesend.png");
-    --theme-color: #ffc107;
+    --eridu-logo: url("http://eridu-app.herokuapp.com/images/eridu_logo.png");
+    --primary-color: #0F41BC;
+    --secondary-color: #F5A201;
 }

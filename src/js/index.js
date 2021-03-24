@@ -9,18 +9,16 @@ import { userSetting } from './userSetting.js';
 import { resetPassword, resetPasswordState } from './resetPassword.js';
 import { userProfileSetting } from './userProfile.js';
 import { aboutDriverApp } from './aboutSetting.js';
+import { signupForm } from './userSignUp.js';
 
 window.onload = async function () {
     const token = localStorage.getItem('token') || sessionStorage.getItem('token');
     if (token) {
         const validToken = await checkToken(token);
         if (validToken) {
-            // window.location.hash = 'scanner';
             window.location.hash = 'search/phone';
             showheaders();
-            // navigators('scanner');
             navigators('search');
-            // qrScanner();
             searchFeatures();
         } else {
             userLogin();
@@ -33,10 +31,6 @@ window.onload = async function () {
         const hash = window.location.hash.toLowerCase();
         console.log(`path changes! ${hash}`);
         const validToken = false;
-        // const validToken = await checkToken();
-        // stopStream();
-        // hideHeaders();
-        // resetPasswordState();
         if (validToken) {
             if (hash.includes(`#dashboard`)) {
                 // window.location.hash = 'scanner';
@@ -67,6 +61,9 @@ window.onload = async function () {
             switch (window.location.hash) {
                 case '#forgetpassword':
                     forgetPassword();
+                    break;
+                case '#signup':
+                    signupForm();
                     break;
                 default:
                     userLogin();

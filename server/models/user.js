@@ -4,6 +4,7 @@ const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const Task = require('./task');
 
+// role hierarchy management should be updated! Current security for roles is insufficient
 const roles = ['staff', 'manager'];
 
 const userSchema = new mongoose.Schema({
@@ -11,6 +12,18 @@ const userSchema = new mongoose.Schema({
         type: String,
         required: true,
         trim: true,
+    },
+    phone: {
+        type: String,
+        unique: true,
+        required: true,
+        trim: true,
+        lowercase: true,
+        validate(value) {
+            if (!validator.isMobilePhone(value)) {
+                throw new Error('Phone number is invalid');
+            }
+        },
     },
     email: {
         type: String,
@@ -35,7 +48,7 @@ const userSchema = new mongoose.Schema({
             }
         },
     },
-    role: {
+    role: { // this should be validate to change. Current security is insufficient!
         type: String,
         trim: true,
         lowercase: true,
@@ -47,11 +60,20 @@ const userSchema = new mongoose.Schema({
             }
         },
     },
+    banned: {
+        type: Boolean,
+        require: true,
+        default: false
+    },
+    active: {
+        type: Boolean,
+        require: true,
+        default: false
+    },
     note: {
         type: String,
         trim: true,
         lowercase: true,
-        require: true,
         default: ''
     },
     tokens: [{

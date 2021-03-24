@@ -1,3 +1,5 @@
+@import 'root.css';
+
 #login_form {
     border: 2px #ccc solid;
     width: 80%;
@@ -19,7 +21,7 @@
 form > div:last-child {
     margin: 1rem auto;
     display: flex;
-    justify-content: center;
+    justify-content: space-between;
     align-items: center;
 }
 
