@@ -8,7 +8,7 @@ export function userLogin() {
     window.location.hash = '';
     container.innerHTML = `
         <div id="login_form">
-            <div id="makesend_logo">
+            <div id="eridu_logo">
                 <img src="${endpoints.host}/images/eridu_logo.png" alt="eridu_logo">
             </div>
             <form action="" autocomplete="off">
