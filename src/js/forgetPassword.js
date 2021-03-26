@@ -15,7 +15,7 @@ export function forgetPassword() {
     const container = document.querySelector('.container');
     container.innerHTML = `
     <div id="login_form">
-        <div id="makesend_logo">
+        <div id="eridu_logo">
         <img src="${endpoints.host}/images/eridu_logo.png" alt="eridu_logo">
         </div>
         <h1>Reset Password</h1>
