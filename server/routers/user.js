@@ -1,40 +1,56 @@
 const express = require('express');
 const multer = require('multer');
 const sharp = require('sharp');
+const validator = require('validator');
 const User = require('../models/user');
 const auth = require('../middleware/auth');
+const checkHeaders = require('../middleware/checkHeaders');
 const { sendWelcomeEmail, sendGoodByeEmail } = require('../emails/account');
 const router = new express.Router();
 
 // POST request to create a new user (sign up)
-router.post('/users', async (req, res) => {
+router.post('/users', checkHeaders, async (req, res) => {
     const user = new User(req.body);
 
     try {
         await user.save();
         sendWelcomeEmail(user.email, user.name);
         const token = await user.generateAuthToken();
-        res.status(201).send({ user, token });
+        res.status(201).send({
+            resCode: 201,
+            user,
+            token
+        });
     } catch (error) {
-        res.status(400).send(error);
+        res.status(400).send({
+            resCode: 400,
+            message: error
+        });
     }
 
 });
 
 // POST request to authenticate user login with email as account and password
-router.post('/users/login', async (req, res) => {
+router.post('/users/login', checkHeaders, async (req, res) => {
     try {
         const user = await User.findByCredentials(req.body.email, req.body.password);
         // generate a specific token for this user, not for all User!
         const token = await user.generateAuthToken();
-        res.send({ user, token });
+        res.send({
+            resCode: 200,
+            user,
+            token
+        });
     } catch (error) {
-        res.status(400).send();
+        res.status(400).send({
+            resCode: 400,
+            message: error
+        });
     }
 });
 
 // Log out the current session on a single device
-router.post('/users/logout', auth, async (req, res) => {
+router.post('/users/logout', checkHeaders, auth, async (req, res) => {
     try {
         req.user.tokens = req.user.tokens.filter(function (token) {
             return token.token !== req.token;
@@ -51,23 +67,26 @@ router.post('/users/logout', auth, async (req, res) => {
 });
 
 // Log out all sessions of login on all devices of a user
-router.post('/users/logoutAll', auth, async (req, res) => {
+router.post('/users/logoutAll', checkHeaders, auth, async (req, res) => {
     try {
         req.user.tokens = [];
         await req.user.save();
-        res.send();
+        res.send({
+            resCode: 200,
+            message: 'Logged Out from all devices'
+        });
     } catch (error) {
         res.status(500).send();
     }
 });
 
-router.get('/users/me', auth, async (req, res) => {
+router.get('/users/me', checkHeaders, auth, async (req, res) => {
     // rather than returning all users data which doesn't make sense, this route handler is changed to return the profile of the authenticated user
     res.send(req.user);
 });
 
 // PATCH request to modify data of a specific user
-router.patch('/users/me', auth, async (req, res) => {
+router.patch('/users/me', checkHeaders, auth, async (req, res) => {
     const updates = Object.keys(req.body);
     const allowedUpdates = ['name', 'email', 'password'];
     const isValidOperation = updates.every(update => allowedUpdates.includes(update));
@@ -79,14 +98,18 @@ router.patch('/users/me', auth, async (req, res) => {
         const user = req.user
         updates.forEach((update) => user[update] = req.body[update]);
         await user.save();
-        res.send(user);
+        res.send({
+            user,
+            resCode: 200,
+            message: `update success!`
+        });
     } catch (error) {
         res.status(400).send(error);
     }
 });
 
 // Delete request to remove a specific user
-router.delete('/users/me', auth, async (req, res) => {
+router.delete('/users/me', checkHeaders, auth, async (req, res) => {
     try {
         await req.user.remove();
         sendGoodByeEmail(req.user.email, req.user.name)
@@ -112,7 +135,7 @@ const upload = multer({
 });
 
 // user upload avatar route with error handling 
-router.post('/users/me/avatar', auth, upload.single('avatar'), async (req, res) => {
+router.post('/users/me/avatar', checkHeaders, auth, upload.single('avatar'), async (req, res) => {
     const buffer = await sharp(req.file.buffer).resize({ width: 250, height: 250, }).png().toBuffer();
     req.user.avatar = buffer;
     //req.user.avatar = req.file.buffer // 'req.file' contains the file sent from the user in the request and the binary data is stored in 'buffer' property
@@ -125,7 +148,7 @@ router.post('/users/me/avatar', auth, upload.single('avatar'), async (req, res) 
 });
 
 // allow user to delete their avatar image
-router.delete('/users/me/avatar', auth, async (req, res) => {
+router.delete('/users/me/avatar', checkHeaders, auth, async (req, res) => {
     if (!req.user.avatar) {
         return res.status(400).send({ error: `You don't have avatar yet` });
     }
@@ -135,7 +158,7 @@ router.delete('/users/me/avatar', auth, async (req, res) => {
 });
 
 // render user avatar image 
-router.get('/users/:id/avatar', async (req, res) => {
+router.get('/users/:id/avatar', checkHeaders, async (req, res) => {
     try {
         const user = await User.findById(req.params.id)
         if (!user || !user.avatar) {
@@ -147,6 +170,62 @@ router.get('/users/:id/avatar', async (req, res) => {
     } catch (error) {
         res.status(404).send();
     }
-})
+});
+
+router.post('/users/exist/email', checkHeaders, async (req, res) => {
+    try {
+        const email = req.body.email;
+        let message = 'email is invalid';
+        let resCode = 400;
+        if (validator.isEmail(email)) {
+            const user = await User.find({
+                email
+            });
+            if (!user.length) {
+                resCode = 200;
+                message = 'This email is available!';
+            } else {
+                message = 'This email has been used!';
+            }
+        }
+        res.status(resCode).send({
+            resCode,
+            message
+        });
+    } catch (err) {
+        res.status(404).send({
+            resCode: 404,
+            message: err
+        });
+    }
+});
+
+router.post('/users/exist/phone', checkHeaders, async (req, res) => {
+    try {
+        const phone = req.body.phone;
+        let message = 'phone number is invalid';
+        let resCode = 400;
+        if (validator.isMobilePhone(phone)) {
+            const user = await User.find({
+                phone
+            });
+            if (!user.length) {
+                resCode = 200;
+                message = 'This phone number is available!';
+            } else {
+                message = 'This phone number has been used!';
+            }
+        }
+        res.status(resCode).send({
+            resCode,
+            message
+        });
+    } catch (err) {
+        res.status(404).send({
+            resCode: 404,
+            message: err
+        });
+    }
+});
 
 module.exports = router;

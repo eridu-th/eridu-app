@@ -40,7 +40,7 @@
     width: 20%;
     font-size: 1rem;
     padding: 0.5rem;
-    background: #0d6efd;
+    background: var(--primary-color);
     border: 1px solid grey;
     border-left: none; /* Prevent double borders */
     cursor: pointer;

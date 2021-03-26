@@ -34,13 +34,13 @@ export function searchFeatures() {
     const location = window.location.hash.split('?')[0];
     state.id = getParameterByName('id');
     state.parcelId = getParameterByName('parcelId');
-    let phoneBtnClass = 'warning';
+    let phoneBtnClass = 'primary';
     let trackIdbtnClass = 'dark';
 
     if (location.includes('trackingid')) {
         searchForm = searchInputByTrackingId;
         phoneBtnClass = 'dark';
-        trackIdbtnClass = 'warning';
+        trackIdbtnClass = 'primary';
     } else {
         searchForm = searchInputByPhone;
     }
@@ -89,15 +89,15 @@ export function searchFeatures() {
         const buttons = [...this.parentNode.children];
         buttons.forEach(btn => {
             if (btn === this) {
-                btn.classList.add('btn-warning');
+                btn.classList.add('btn-primary');
                 btn.classList.remove('btn-dark');
             } else {
                 btn.classList.add('btn-dark');
-                btn.classList.remove('btn-warning');
+                btn.classList.remove('btn-primary');
             }
         });
         if (this.id === 'search_by_tracking_id_btn') {
-            document.querySelector('#search_by_tracking_id_btn').classList.add('btn-warning');
+            document.querySelector('#search_by_tracking_id_btn').classList.add('btn-primary');
             document.querySelector('#search_by_phone_btn').classList.add('btn-dark');
             window.location.hash = 'search/trackingid';
         } else if (this.id === 'search_by_phone_btn') {

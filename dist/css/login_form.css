@@ -18,7 +18,7 @@
     margin: 0 auto;
 }
 
-form > div:last-child {
+#login_form form > div:last-child {
     margin: 1rem auto;
     display: flex;
     justify-content: space-between;

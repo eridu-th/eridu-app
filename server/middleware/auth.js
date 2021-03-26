@@ -19,7 +19,11 @@ const auth = async function (req, res, next) {
         req.user = user;
         next();
     } catch (error) {
-        res.status(401).send({ error: 'Please authenticate.' });
+        res.status(401).send({
+            resCode: 401,
+            error: 'Please authenticate',
+            errorNessage: error
+        });
     }
 }
 

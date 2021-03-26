@@ -5,18 +5,28 @@ const bodyParser = require('body-parser');
 const axios = require('axios');
 const path = require('path');
 const PORT = process.env.PORT || 8080;
-const bcrypt = require('bcryptjs');
-require('dotenv').config();
 
+
+
+// encryption process
+const bcrypt = require('bcryptjs');
+const CryptoJS = require('crypto-js');
+const checkHeaders = require('./server/middleware/checkHeaders');
+require('dotenv').config(); // enable app to use .env file
+const clientToken = process.env.clientToken;
+const clientSecret = process.env.clientSecret;
+
+// task and user routers
 require('./server/db/mongoose');
 const userRouter = require('./server/routers/user');
 const taskRouter = require('./server/routers/task');
 
+// enable cors
+app.use(cors());
+
 app.use(express.json());
 app.use(userRouter);
 app.use(taskRouter);
-
-// enable app to use .env file
 
 // host static html file
 app.use(express.static(path.join(__dirname, 'dist')));
@@ -24,8 +34,6 @@ app.use(express.static(path.join(__dirname, 'dist')));
 app.use('/images', express.static(path.join(__dirname, 'images')));
 // parse json from body of a request
 app.use(bodyParser.urlencoded({ extended: false }));
-// enable cors
-app.use(cors());
 
 app.get('/', (req, res) => {
     res.render('index');
@@ -40,9 +48,29 @@ app.post('/header', (req, res) => {
     }));
 });
 
-app.post('/checkToken', (req, res) => {
-    console.log(req.headers);
-    res.send(true);
+app.post('/checkToken', checkHeaders, async (req, res) => {
+    const jwt = require('jsonwebtoken');
+    const User = require('./server/models/user');
+    try {
+        // remove 'Bearer ' in the beginning of the String
+        const token = req.header('Authorization').replace('Bearer ', '');
+        const decoded = jwt.verify(token, process.env.JWT_SECRET);
+        const user = await User.findOne({ _id: decoded._id, 'tokens.token': token });
+
+        if (!user) {
+            throw new Error();
+        }
+        res.send({
+            resCode: 200,
+            message: 'success',
+        });
+    } catch (error) {
+        res.status(401).send({
+            resCode: 401,
+            error: 'Please authenticate',
+            errorNessage: error
+        });
+    }
 });
 
 app.listen(PORT, function (err) {
@@ -51,15 +79,13 @@ app.listen(PORT, function (err) {
 });
 
 function generateHeaders() {
-    const CryptoJS = require('crypto-js');
-    const clientToken = process.env.clientToken;
-    const clientSecret = process.env.clientSecret;
-    const timeStamp = (new Date().toISOString().substr(0, 19).replace(/\D/g, '')) + (Math.floor(Math.random() * 900) + 100).toString();
+    const timeStamp = (new Date().getTime()) + (Math.floor(Math.random() * 900) + 100).toString();
     const ciphertextSHA256 = CryptoJS.HmacSHA256(timeStamp, clientSecret);
     const signature = ciphertextSHA256.toString()
-    return {
+    const headers = {
         clientToken,
         timeStamp,
         signature
     }
+    return headers;
 }

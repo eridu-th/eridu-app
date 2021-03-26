@@ -6,8 +6,9 @@ export function userSetting() {
     header.innerHTML = `
         <div id="header">SETTINGS</div>
     `;
-    const conatiner = document.querySelector('.container');
-    conatiner.innerHTML = `
+    const container = document.querySelector('.container');
+    container.style.justifyContent = `space-between`;
+    container.innerHTML = `
         <div id="setting">
             <div id="search_setting">
                 <form action="">

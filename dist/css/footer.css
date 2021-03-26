@@ -10,7 +10,7 @@ footer {
     display: grid;
     width: 100%;
     grid-template-columns: 1fr 1fr 1fr 1fr;
-    background: #ffc107;
+    background: var(--primary-color);
     height: 56px;
 }
 
@@ -18,7 +18,7 @@ footer {
     display: flex;
     justify-content: center;
     align-items: center;
-    background: #ffc107;
+    background: var(--primary-color);
 }
 
 .navigator a {
@@ -37,7 +37,7 @@ footer {
 }
 
 .navigator .selected {
-    color: #000;
+    color: #fff;
 }
 
 @media (min-width: 500px) {

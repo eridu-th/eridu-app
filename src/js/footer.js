@@ -64,6 +64,9 @@ function activeFeature(location) {
 
     switch (location) {
         case 'dashboard':
+            setting.classList.add('selected');
+            break;
+        case 'search':
             search.classList.add('selected');
             break;
         case 'scanner':
@@ -76,6 +79,6 @@ function activeFeature(location) {
             setting.classList.add('selected');
             break;
         default:
-            search.classList.add('selected');
+            setting.classList.add('selected');
     }
 }
