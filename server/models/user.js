@@ -3,6 +3,7 @@ const validator = require('validator');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const Task = require('./task');
+const ResetToken = require('./resetToken');
 
 // role hierarchy management should be updated! Current security for roles is insufficient
 const roles = ['staff', 'manager'];
@@ -96,6 +97,13 @@ userSchema.virtual('tasks', {
     foreignField: 'owner',
 });
 
+// virtual property set up for mongoose to learn the relationship between collections
+userSchema.virtual('resetToken', {
+    ref: 'ResetToken',
+    localField: '_id',
+    foreignField: 'owner',
+});
+
 // we need to use 'this' to the specific user, so we should use a regular function statement
 // 'methods' is the property for instances which method on every instance is a bit different
 userSchema.methods.generateAuthToken = async function () {
@@ -106,6 +114,16 @@ userSchema.methods.generateAuthToken = async function () {
     user.tokens = user.tokens.concat({ token });
     // save the instance to database 
     await user.save();
+
+    return token;
+}
+
+userSchema.methods.generateResetToken = async function () {
+    const user = this;
+    const token = jwt.sign({
+        _id: user._id.toString(),
+        exp: Math.floor(Date.now() / 1000) + (60 * 15),
+    }, process.env.JWT_SECRET);
 
     return token;
 }
@@ -156,6 +174,8 @@ userSchema.pre('remove', async function (next) {
     const user = this;
     // delete multiple tasks by using only the owner field
     await Task.deleteMany({ owner: user._id });
+    // delete multiple token by using only the owner field
+    await ResetToken.deleteMany({ owner: user._id });
     next();
 });
 

@@ -172,6 +172,7 @@ router.get('/users/:id/avatar', checkHeaders, async (req, res) => {
     }
 });
 
+// check if an email has been used
 router.post('/users/exist/email', checkHeaders, async (req, res) => {
     try {
         const email = req.body.email;
@@ -185,10 +186,11 @@ router.post('/users/exist/email', checkHeaders, async (req, res) => {
                 resCode = 200;
                 message = 'This email is available!';
             } else {
+                resCode = 401;
                 message = 'This email has been used!';
             }
         }
-        res.status(resCode).send({
+        res.send({
             resCode,
             message
         });
@@ -200,6 +202,7 @@ router.post('/users/exist/email', checkHeaders, async (req, res) => {
     }
 });
 
+// check if a phone has been used
 router.post('/users/exist/phone', checkHeaders, async (req, res) => {
     try {
         const phone = req.body.phone;

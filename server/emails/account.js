@@ -28,7 +28,28 @@ const sendGoodByeEmail = (email, name) => {
         .catch(err => console.log(err));
 }
 
+const sendResetPasswordEmail = (email, name, token, host) => {
+    const duration = new Date(new Date().getTime() + 1000 * 60 * 10);
+    sgMail.send({
+        to: email,
+        from: 'levihuang@gmail.com',
+        subject: `Reset your password at Eridu`,
+        html: `
+        <h1>Reset your password</h1>
+        <p>Account: ${name}</p>
+        <p>Email: ${email}</p>
+        <p>Please access the following link <a href="${host}?jwt=${token}">${host}?jwt=${token}#forgetpassword/reset</a> to reset your password</p>
+        <p>The link only valids for 10 minutes.</p>
+        `,
+    })
+        .then(() => {
+            console.log(`Reset Email is sent to ${name} at ${email}`)
+        })
+        .catch(err => console.log(err));
+}
+
 module.exports = {
     sendWelcomeEmail,
     sendGoodByeEmail,
+    sendResetPasswordEmail,
 };

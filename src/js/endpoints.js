@@ -6,7 +6,10 @@ const endpoints = {
     loginEndpoint: `${host}/users/login`,
     signupEndpoint: `${host}/users`,
     verifyEmailEndpoint: `${host}/users/exist/email`,
-    verifyPhoneEndpoint: `${host}/users/exist/phone`
+    verifyPhoneEndpoint: `${host}/users/exist/phone`,
+    sendResetPasswordEndpoint: `${host}/resetToken`,
+    verifyResetTokenEndpoint: `${host}/resetToken/verify`,
+    resetPasswordEndpoint: `${host}/resetToken/resetpassword`,
 }
 
 export default endpoints;

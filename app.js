@@ -20,6 +20,7 @@ const clientSecret = process.env.clientSecret;
 require('./server/db/mongoose');
 const userRouter = require('./server/routers/user');
 const taskRouter = require('./server/routers/task');
+const resetTokenRouter = require('./server/routers/resetToken');
 
 // enable cors
 app.use(cors());
@@ -27,6 +28,7 @@ app.use(cors());
 app.use(express.json());
 app.use(userRouter);
 app.use(taskRouter);
+app.use(resetTokenRouter);
 
 // host static html file
 app.use(express.static(path.join(__dirname, 'dist')));
@@ -37,6 +39,10 @@ app.use(bodyParser.urlencoded({ extended: false }));
 
 app.get('/', (req, res) => {
     res.render('index');
+});
+
+app.get('/dashboard', (req, res) => {
+    res.sendFile('./dist/dashboard.html', { root: __dirname });
 });
 
 app.post('/header', (req, res) => {
