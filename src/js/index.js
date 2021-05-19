@@ -32,16 +32,17 @@ window.onload = async function () {
 
 function authedRedirect(state = null) {
     if (state) {
-        if (window.location.path !== '/dashboard') {
-            window.location.path = '/dashboard';
+        if (window.location.pathname !== '/dashboard') {
+            window.location.pathname = '/dashboard';
         }
     }
 }
 
 function noAuthRedirect(state = null) {
     if (state) {
-        if (window.location.path !== '/') {
-            window.location.path = '/';
+        if (window.location.pathname !== '/') {
+            window.location.hash = '';
+            window.location.pathname = '/';
         }
         const urlParams = new URLSearchParams(window.location.search);
         const jwt = urlParams.get('jwt');
