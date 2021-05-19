@@ -9,13 +9,11 @@ window.onload = async function () {
     if (token) {
         const authenticated = await verifyToken(token);
         if (authenticated) {
-            window.location.pathname = '/dashboard';
+            authedRedirect(state);
         } else {
-            window.location.pathname = '/';
             userLogin();
         }
     } else {
-        window.location.pathname = '/';
         noAuthRedirect(state);
     }
 
@@ -25,16 +23,26 @@ window.onload = async function () {
         console.log(`path changes! ${hash}`);
         const authenticated = await verifyToken(token);
         if (authenticated) {
-            window.location.pathname = '/dashboard';
+            authedRedirect(state);
         } else {
-            window.location.pathname = '/';
             noAuthRedirect(state);
+        }
+    }
+}
+
+function authedRedirect(state = null) {
+    if (state) {
+        if (window.location.path !== '/dashboard') {
+            window.location.path = '/dashboard';
         }
     }
 }
 
 function noAuthRedirect(state = null) {
     if (state) {
+        if (window.location.path !== '/') {
+            window.location.path = '/';
+        }
         const urlParams = new URLSearchParams(window.location.search);
         const jwt = urlParams.get('jwt');
         if (jwt && !state.redirected) {
