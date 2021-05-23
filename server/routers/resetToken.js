@@ -36,6 +36,7 @@ router.post('/resetToken', checkHeaders, async (req, res) => {
                     await jwtToken.save();
                     sendResetPasswordEmail(user[0].email, user[0].name, token, req.headers.origin);
                     res.status(200).send({
+                        resCode: 200,
                         message,
                     });
                 } catch (error) {
@@ -124,7 +125,7 @@ router.post('/resetToken/resetpassword', checkHeaders, async (req, res) => {
     } catch (err) {
         res.status(500).send({
             resCode: 500,
-            message: err,
+            message: 'wrong',
         });
     }
 });

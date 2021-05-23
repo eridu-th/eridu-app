@@ -4,15 +4,13 @@ const cors = require('cors');
 const bodyParser = require('body-parser');
 const axios = require('axios');
 const path = require('path');
+require('dotenv').config(); // enable app to use .env file
 const PORT = process.env.PORT || 8080;
-
-
 
 // encryption process
 const bcrypt = require('bcryptjs');
 const CryptoJS = require('crypto-js');
 const checkHeaders = require('./server/middleware/checkHeaders');
-require('dotenv').config(); // enable app to use .env file
 const clientToken = process.env.clientToken;
 const clientSecret = process.env.clientSecret;
 

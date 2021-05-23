@@ -38,7 +38,7 @@ const sendResetPasswordEmail = (email, name, token, host) => {
         <h1>Reset your password</h1>
         <p>Account: ${name}</p>
         <p>Email: ${email}</p>
-        <p>Please access the following link <a href="${host}?jwt=${token}">${host}?jwt=${token}#forgetpassword/reset</a> to reset your password</p>
+        <p>Please access the following link <a href="${host}/forgetpassword?jwt=${token}">${host}?jwt=${token}#forgetpassword/reset</a> to reset your password</p>
         <p>The link only valids for 10 minutes.</p>
         `,
     })
