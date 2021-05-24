@@ -21,7 +21,13 @@ const taskRouter = require('./server/routers/task');
 const resetTokenRouter = require('./server/routers/resetToken');
 
 // enable cors
-app.use(cors());
+const options = {
+    origin: "*",
+    methods: "GET,HEAD,PUT,PATCH,POST,DELETE",
+    preflightContinue: false,
+    optionsSuccessStatus: 204
+}
+app.use(cors(options));
 
 app.use(express.json());
 app.use(userRouter);

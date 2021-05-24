@@ -62,7 +62,10 @@ router.post('/users/logout', checkHeaders, auth, async (req, res) => {
             message: "Logged Out"
         });
     } catch (error) {
-        res.status(500).send();
+        res.status(500).send({
+            resCode: 500,
+            message: error,
+        });
     }
 });
 
@@ -86,9 +89,9 @@ router.get('/users/me', checkHeaders, auth, async (req, res) => {
 });
 
 // PATCH request to modify data of a specific user
-router.patch('/users/me', checkHeaders, auth, async (req, res) => {
+router.post('/users/me', checkHeaders, auth, async (req, res) => {
     const updates = Object.keys(req.body);
-    const allowedUpdates = ['name', 'email', 'password'];
+    const allowedUpdates = ['name', 'email', 'phone', 'password',];
     const isValidOperation = updates.every(update => allowedUpdates.includes(update));
     if (!isValidOperation) {
         return res.status(400).send({ error: 'Invalid udpates!' });
