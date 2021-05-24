@@ -45,6 +45,11 @@ router.post('/resetToken', checkHeaders, async (req, res) => {
                         message: error
                     });
                 }
+            } else {
+                res.status(404).send({
+                    resCode,
+                    message,
+                });
             }
         } else {
             res.send({
