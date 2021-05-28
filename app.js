@@ -19,6 +19,7 @@ require('./server/db/mongoose');
 const userRouter = require('./server/routers/user');
 const taskRouter = require('./server/routers/task');
 const resetTokenRouter = require('./server/routers/resetToken');
+const carryRouter = require('./server/routers/carry');
 
 // enable cors
 const options = {
@@ -33,6 +34,7 @@ app.use(express.json());
 app.use(userRouter);
 app.use(taskRouter);
 app.use(resetTokenRouter);
+app.use(carryRouter);
 
 // host static html file
 app.use(express.static(path.join(__dirname, 'dist')));
