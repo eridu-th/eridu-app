@@ -42,14 +42,19 @@ router.post('/carry/order', checkHeaders, auth, async (req, res) => {
         message: 'something went wrong on the server...',
         data: null,
     };
-    if (req.body.token && req.body.data) {
-        const response = await callCarry(`${carryHost}/api/order`, req.body.token, req.body.data);
-        result.resCode = response.data.status;
-        result.message = response.data.message;
-        result.data = response.data.data;
-    } else {
-        result.resCode = 401;
-        result.message = 'missing token or invalid payload parameters';
+
+    try {
+        if (req.body.token && req.body.data) {
+            const response = await callCarry(`${carryHost}/api/order`, req.body.token, req.body.data);
+            result.resCode = response.data.status;
+            result.message = response.data.message;
+            result.data = response.data.data;
+        } else {
+            result.resCode = 401;
+            result.message = 'missing token or invalid payload parameters';
+        }
+    } catch (err) {
+        result.data = err;
     }
 
     res.status(result.resCode).send(result);
@@ -61,14 +66,18 @@ router.post('/carry/product', checkHeaders, auth, async (req, res) => {
         message: 'something went wrong on the server...',
         data: null,
     };
-    if (req.body.token && req.body.data) {
-        const response = await callCarry(`${carryHost}/api/product`, req.body.token, req.body.data);
-        result.resCode = response.data.status;
-        result.message = response.data.message;
-        result.data = response.data.data;
-    } else {
-        result.resCode = 401;
-        result.message = 'missing token or invalid payload parameters';
+    try {
+        if (req.body.token && req.body.data) {
+            const response = await callCarry(`${carryHost}/api/product`, req.body.token, req.body.data);
+            result.resCode = response.data.status;
+            result.message = response.data.message;
+            result.data = response.data.data;
+        } else {
+            result.resCode = 401;
+            result.message = 'missing token or invalid payload parameters';
+        }
+    } catch (err) {
+        result.data = err
     }
 
     res.status(result.resCode).send(result);
