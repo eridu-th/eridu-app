@@ -77,6 +77,12 @@ const userSchema = new mongoose.Schema({
         lowercase: true,
         default: ''
     },
+    carry_shop_id: {
+        type: Number,
+        trim: true,
+        require: true,
+        default: 137,
+    },
     tokens: [{
         token: {
             type: String,

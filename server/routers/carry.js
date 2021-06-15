@@ -5,13 +5,18 @@ const checkHeaders = require('../middleware/checkHeaders');
 const auth = require('../middleware/auth');
 const router = new express.Router();
 
-const carryUsername = process.env.CARRY_ACCOUNT;
-const carryPassword = process.env.CARRY_PASSWORD;
 const carryHost = process.env.CARRY_HOST;
+// const carryUsername = process.env.CARRY_ACCOUNT;
+// const carryPassword = process.env.CARRY_PASSWORD;
+
+// const carryTestUsername = process.env.CARRY_TEST_ACCOUNT;
+// const carryTestPassword = process.env.CARRY_TEST_PASSWORD;
 
 router.post('/carry/login', checkHeaders, auth, async (req, res) => {
     let resCode = 500;
     let data = null;
+
+    const { carryUsername, carryPassword } = carryUser(parseInt(req.user.carry_shop_id));
 
     try {
         const response = await axios({
@@ -102,3 +107,22 @@ async function callCarry(url = '', token = '', data = null) {
 }
 
 module.exports = router;
+
+function carryUser(id = '') {
+    let carryUsername = process.env.CARRY_TEST_ACCOUNT;
+    let carryPassword = process.env.CARRY_TEST_PASSWORD;
+    if (id) {
+        switch (id) {
+            case 249:
+                carryUsername = process.env.CARRY_ACCOUNT_HH;
+                carryPassword = process.env.CARRY_PASSWORD_HH;
+                break;
+            default:
+                break;
+        }
+    }
+    return {
+        carryUsername,
+        carryPassword,
+    };
+}
