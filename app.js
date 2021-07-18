@@ -6,6 +6,7 @@ const axios = require('axios');
 const path = require('path');
 require('dotenv').config(); // enable app to use .env file
 const PORT = process.env.PORT || 8080;
+const mysql = require('mysql');
 
 // encryption process
 const bcrypt = require('bcryptjs');
@@ -15,11 +16,11 @@ const clientToken = process.env.clientToken;
 const clientSecret = process.env.clientSecret;
 
 // task and user routers
-require('./server/db/mongoose');
-const userRouter = require('./server/routers/user');
-const taskRouter = require('./server/routers/task');
-const resetTokenRouter = require('./server/routers/resetToken');
-const carryRouter = require('./server/routers/carry');
+// require('./server/db/mongoose');
+// const userRouter = require('./server/routers/user');
+// const taskRouter = require('./server/routers/task');
+// const resetTokenRouter = require('./server/routers/resetToken');
+// const carryRouter = require('./server/routers/carry');
 
 // enable cors
 const options = {
@@ -31,10 +32,10 @@ const options = {
 app.use(cors(options));
 
 app.use(express.json());
-app.use(userRouter);
-app.use(taskRouter);
-app.use(resetTokenRouter);
-app.use(carryRouter);
+// app.use(userRouter);
+// app.use(taskRouter);
+// app.use(resetTokenRouter);
+// app.use(carryRouter);
 
 // host static html file
 app.use(express.static(path.join(__dirname, 'dist')));
@@ -51,6 +52,37 @@ app.get('/dashboard', (req, res) => {
     res.sendFile('./dist/dashboard.html', { root: __dirname });
 });
 
+app.get('/mysql', (req, res) => {
+    try {
+        const connection = mysql.createConnection({
+            host: process.env.DB_HOST,
+            port: process.env.DB_PORT,
+            user: process.env.DB_USER,
+            password: process.env.DB_PASSWORD,
+            database: process.env.DB_DATABASE
+        });
+        connection.connect();
+        const query = `
+            CREATE TABLE MyGuests (
+                id INT(6) UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+                firstname VARCHAR(30) NOT NULL,
+                lastname VARCHAR(30) NOT NULL,
+                email VARCHAR(50),
+                reg_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+            )
+        `;
+        connection.query(query, function (error, results, fields) {
+            if (error) throw error;
+            console.log(results)
+            res.send(JSON.stringify(results));
+        });
+        connection.end();
+    } catch (error) {
+        console.log(error);
+        res.status(500).send(error);
+    }
+});
+
 app.post('/header', (req, res) => {
     const { clientToken, timeStamp, signature } = generateHeaders();
     res.send(JSON.stringify({
@@ -60,30 +92,30 @@ app.post('/header', (req, res) => {
     }));
 });
 
-app.post('/checkToken', checkHeaders, async (req, res) => {
-    const jwt = require('jsonwebtoken');
-    const User = require('./server/models/user');
-    try {
-        // remove 'Bearer ' in the beginning of the String
-        const token = req.header('Authorization').replace('Bearer ', '');
-        const decoded = jwt.verify(token, process.env.JWT_SECRET);
-        const user = await User.findOne({ _id: decoded._id, 'tokens.token': token });
+// app.post('/checkToken', checkHeaders, async (req, res) => {
+//     const jwt = require('jsonwebtoken');
+//     const User = require('./server/models/user');
+//     try {
+//         // remove 'Bearer ' in the beginning of the String
+//         const token = req.header('Authorization').replace('Bearer ', '');
+//         const decoded = jwt.verify(token, process.env.JWT_SECRET);
+//         const user = await User.findOne({ _id: decoded._id, 'tokens.token': token });
 
-        if (!user) {
-            throw new Error();
-        }
-        res.send({
-            resCode: 200,
-            message: 'success',
-        });
-    } catch (error) {
-        res.status(401).send({
-            resCode: 401,
-            error: 'Please authenticate',
-            errorNessage: error
-        });
-    }
-});
+//         if (!user) {
+//             throw new Error();
+//         }
+//         res.send({
+//             resCode: 200,
+//             message: 'success',
+//         });
+//     } catch (error) {
+//         res.status(401).send({
+//             resCode: 401,
+//             error: 'Please authenticate',
+//             errorNessage: error
+//         });
+//     }
+// });
 
 app.listen(PORT, function (err) {
     if (err) return err;
