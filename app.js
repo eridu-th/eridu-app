@@ -16,11 +16,11 @@ const clientToken = process.env.clientToken;
 const clientSecret = process.env.clientSecret;
 
 // task and user routers
-// require('./server/db/mongoose');
-// const userRouter = require('./server/routers/user');
-// const taskRouter = require('./server/routers/task');
-// const resetTokenRouter = require('./server/routers/resetToken');
-// const carryRouter = require('./server/routers/carry');
+require('./server/db/mongoose');
+const userRouter = require('./server/routers/user');
+const taskRouter = require('./server/routers/task');
+const resetTokenRouter = require('./server/routers/resetToken');
+const carryRouter = require('./server/routers/carry');
 
 // enable cors
 const options = {
@@ -32,10 +32,10 @@ const options = {
 app.use(cors(options));
 
 app.use(express.json());
-// app.use(userRouter);
-// app.use(taskRouter);
-// app.use(resetTokenRouter);
-// app.use(carryRouter);
+app.use(userRouter);
+app.use(taskRouter);
+app.use(resetTokenRouter);
+app.use(carryRouter);
 
 // host static html file
 app.use(express.static(path.join(__dirname, 'dist')));
@@ -92,30 +92,30 @@ app.post('/header', (req, res) => {
     }));
 });
 
-// app.post('/checkToken', checkHeaders, async (req, res) => {
-//     const jwt = require('jsonwebtoken');
-//     const User = require('./server/models/user');
-//     try {
-//         // remove 'Bearer ' in the beginning of the String
-//         const token = req.header('Authorization').replace('Bearer ', '');
-//         const decoded = jwt.verify(token, process.env.JWT_SECRET);
-//         const user = await User.findOne({ _id: decoded._id, 'tokens.token': token });
+app.post('/checkToken', checkHeaders, async (req, res) => {
+    const jwt = require('jsonwebtoken');
+    const User = require('./server/models/user');
+    try {
+        // remove 'Bearer ' in the beginning of the String
+        const token = req.header('Authorization').replace('Bearer ', '');
+        const decoded = jwt.verify(token, process.env.JWT_SECRET);
+        const user = await User.findOne({ _id: decoded._id, 'tokens.token': token });
 
-//         if (!user) {
-//             throw new Error();
-//         }
-//         res.send({
-//             resCode: 200,
-//             message: 'success',
-//         });
-//     } catch (error) {
-//         res.status(401).send({
-//             resCode: 401,
-//             error: 'Please authenticate',
-//             errorNessage: error
-//         });
-//     }
-// });
+        if (!user) {
+            throw new Error();
+        }
+        res.send({
+            resCode: 200,
+            message: 'success',
+        });
+    } catch (error) {
+        res.status(401).send({
+            resCode: 401,
+            error: 'Please authenticate',
+            errorNessage: error
+        });
+    }
+});
 
 app.listen(PORT, function (err) {
     if (err) return err;
