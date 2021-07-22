@@ -117,6 +117,10 @@ function carryUser(id = '') {
                 carryUsername = process.env.CARRY_ACCOUNT_HH;
                 carryPassword = process.env.CARRY_PASSWORD_HH;
                 break;
+            case 257:
+                carryUsername = process.env.CARRY_ACCOUNT_CLP;
+                carryPassword = process.env.CARRY_PASSWORD_CLP;
+                break;
             default:
                 break;
         }
